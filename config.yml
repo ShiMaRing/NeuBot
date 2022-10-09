@@ -1,12 +1,21 @@
-redis :
+redis:
+  enable: false  #默认不开启redis作为远程缓存，默认采用go-cache进程内缓存
   address:
   port:
   password:
 
 mysql:
-  address:
-  database:
-  user:
-  password:
+  address: 101.43.161.75
+  port:   3306
+  database: neuBot
+  user: xgs
+  password: xgs1150840779
 
-  
+cqhttp:
+  address: 0.0.0.0
+  port: 5700
+
+bot:
+  port: 8085 #启动端口
+
+
