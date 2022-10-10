@@ -1,21 +1,14 @@
 package api
 
-import (
-	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"log"
-	"net/http"
-)
+//user_id	int64	-	对方 QQ 号
+//group_id	int64	-	主动发起临时会话群号(机器人本身必须是管理员/群主)
+//message	message	-	要发送的内容
+//auto_escape	boolean	false	消息内容是否作为纯文本发送 ( 即不解析 CQ 码 ) , 只在 message 字段是字符串时有效
 
-// GetMsg Bot Api 接受来自cqhttp上报的信息
-func GetMsg(c *gin.Context) {
-	var jsonReq string
-	if c.Request.Body != nil {
-		data, err := ioutil.ReadAll(c.Request.Body)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
-		}
-		jsonReq = string(data)
-	}
-	log.Println(jsonReq)
+// ReplyMessage 返回给cqhttp的消息
+type ReplyMessage struct {
+	UserId     int64  `json:"user_id,omitempty"`
+	GroupId    int64  `json:"group_id,omitempty"`
+	Message    string `json:"message,omitempty"`
+	AutoEscape bool   `json:"auto_escape,omitempty"`
 }

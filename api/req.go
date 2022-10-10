@@ -16,8 +16,8 @@ type MsgReq struct {
 	RawMessage string `json:"raw_message"`
 }
 
-// AddFriendReq 消息结构体，当添加好友时触发
-type AddFriendReq struct {
+// NoticeReq 消息结构体，当添加好友时触发
+type NoticeReq struct {
 	BaseReq
 	NoticeType string `json:"notice_type"`
 	UserID     int    `json:"user_id"`

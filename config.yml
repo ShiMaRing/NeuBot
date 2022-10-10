@@ -17,5 +17,6 @@ cqhttp:
 
 bot:
   port: 8085 #启动端口
+  idleThreadNum: 20 #线程池容量
 
 
