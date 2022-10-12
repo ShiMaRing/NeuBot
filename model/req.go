@@ -19,9 +19,9 @@ type MsgReq struct {
 // RequestReq 消息结构体，当请求好友时触发
 type RequestReq struct {
 	BaseReq
-	NoticeType string `json:"notice_type"`
-	UserID     int    `json:"user_id"`
-	Comment    string `json:"comment"`
+	RequestType string `json:"request_type"`
+	UserID      int    `json:"user_id"`
+	Comment     string `json:"comment"`
 }
 
 // Sender  消息发送者

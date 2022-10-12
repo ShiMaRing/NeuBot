@@ -46,23 +46,26 @@ func GetMsg(c *gin.Context) {
 		noticeReq := &model.RequestReq{}
 		err := json.Unmarshal(reqBody, noticeReq)
 		if err != nil {
-			log.Println(err)
-			return
+			log.Fatalln(err)
 		}
-		fmt.Println(noticeReq)
-		if noticeReq.NoticeType == AddFriend {
+		if noticeReq.RequestType == AddFriend {
 			go func() {
 				noticeHandler := handler.NewNoticeHandler(noticeReq)
 				err = noticeHandler.Greet()
 				if err != nil {
-					log.Println(err)
-					return
+					log.Fatalln(err)
 				}
 			}()
 		}
 	case Notice:
 
 	case Message:
+		message := &model.MsgReq{}
+		err := json.Unmarshal(reqBody, message)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
 	default:
 		return
 	}

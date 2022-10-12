@@ -17,7 +17,7 @@ func NewNoticeHandler(noticeReq *model.RequestReq) *NoticeHandler {
 // Greet 给新好友打招呼
 func (handler *NoticeHandler) Greet() error {
 	fmt.Println(*handler.noticeReq)
-	err := ReplyMsg(int64(handler.noticeReq.UserID), "你好，欢迎使用NEUBot")
+	_, err := ReplyMsg(int64(handler.noticeReq.UserID), "欢迎使用NEU-BOT", false)
 	if err != nil {
 		return err
 	}

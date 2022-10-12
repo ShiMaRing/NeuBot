@@ -16,6 +16,11 @@ import (
 const (
 	Timeout         = 5 * time.Second
 	JSONContentType = "application/json"
+	Menu            = `1.显示菜单
+                       2.注册账号
+                       3.打开或关闭每日课程提醒
+  					   4.打开或关闭每日健康上报
+                       5.注销账号`
 )
 
 var (
@@ -39,11 +44,11 @@ func initClient() {
 func initUrl() {
 	address := configs.CqhttpConf.Address
 	port := configs.CqhttpConf.Port
-	sendMsgUrl = fmt.Sprintf("http://%s:%d", address, port)
+	sendMsgUrl = fmt.Sprintf("http://%s:%d/send_private_msg", address, port)
 }
 
 // ReplyMsg 发送消息，需要指定是否需要进行转义，true则表示作为纯文本发送,默认选项
-func ReplyMsg(receiver int64, msg string, autoEscape ...bool) error {
+func ReplyMsg(receiver int64, msg string, autoEscape ...bool) ([]byte, error) {
 
 	var isAutoEscape bool
 	//不传参默认为false，即不转解析直接发送
@@ -63,22 +68,23 @@ func ReplyMsg(receiver int64, msg string, autoEscape ...bool) error {
 
 	if err != nil {
 		log.Println(err) //此处应当进行日志记录，后续需要集成Zap
-		return err
+		return nil, err
 	}
 	data := bytes.NewReader(jsonBody)
 	res, err := client.Post(sendMsgUrl, JSONContentType, data)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
 		data, _ := ioutil.ReadAll(res.Body)
-		return fmt.Errorf("response code is %d, body:%s", res.StatusCode, string(data))
+		return data, fmt.Errorf("response code is %d, body:%s", res.StatusCode, string(data))
 	}
 
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
+	d, _ := ioutil.ReadAll(res.Body)
 
-	return nil
+	return d, nil
 }
