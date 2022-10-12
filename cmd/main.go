@@ -3,6 +3,7 @@ package main
 import (
 	"NeuBot/api"
 	"NeuBot/configs"
+	"NeuBot/handler"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -11,6 +12,7 @@ import (
 func init() {
 	//初始化配置文件
 	configs.ConfigInit()
+	handler.Init()
 }
 
 //程序入口

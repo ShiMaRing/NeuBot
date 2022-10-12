@@ -2,7 +2,9 @@ package api
 
 import (
 	"NeuBot/handler"
+	"NeuBot/model"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
@@ -13,7 +15,7 @@ const (
 	Request   = "request"    //请求, 例如, 好友申请
 	Notice    = "notice"     //通知, 例如, 群成员增加
 	MetaEvent = "meta_event" //元事件, 例如, go-cqhttp 心跳包
-	AddFriend = "friend_add"
+	AddFriend = "friend"
 )
 
 // GetMsg Bot Api 接受来自cqhttp上报的信息,bot入口
@@ -30,24 +32,24 @@ func GetMsg(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	baseReq := &BaseReq{}
+	baseReq := &model.BaseReq{}
 	err = json.Unmarshal(reqBody, baseReq)
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Println(baseReq)
+
 	switch baseReq.PostType {
 	case MetaEvent:
 	//元数据直接抛弃
 	case Request:
-	//请求，暂时不实现
-	case Notice:
-
-		noticeReq := &NoticeReq{}
+		noticeReq := &model.RequestReq{}
 		err := json.Unmarshal(reqBody, noticeReq)
 		if err != nil {
 			log.Println(err)
 			return
 		}
+		fmt.Println(noticeReq)
 		if noticeReq.NoticeType == AddFriend {
 			go func() {
 				noticeHandler := handler.NewNoticeHandler(noticeReq)
@@ -58,8 +60,10 @@ func GetMsg(c *gin.Context) {
 				}
 			}()
 		}
+	case Notice:
+
 	case Message:
-
+	default:
+		return
 	}
-
 }

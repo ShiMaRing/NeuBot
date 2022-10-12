@@ -1,4 +1,4 @@
-package api
+package model
 
 // BaseReq 所有请求都会携带的基本消息
 type BaseReq struct {
@@ -16,11 +16,12 @@ type MsgReq struct {
 	RawMessage string `json:"raw_message"`
 }
 
-// NoticeReq 消息结构体，当添加好友时触发
-type NoticeReq struct {
+// RequestReq 消息结构体，当请求好友时触发
+type RequestReq struct {
 	BaseReq
 	NoticeType string `json:"notice_type"`
 	UserID     int    `json:"user_id"`
+	Comment    string `json:"comment"`
 }
 
 // Sender  消息发送者

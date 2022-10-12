@@ -1,4 +1,4 @@
-package api
+package model
 
 //user_id	int64	-	对方 QQ 号
 //group_id	int64	-	主动发起临时会话群号(机器人本身必须是管理员/群主)

@@ -1,13 +1,15 @@
-package api
+package handler
 
 import (
 	"NeuBot/configs"
+	"NeuBot/model"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -17,11 +19,12 @@ const (
 )
 
 var (
+	once       sync.Once
 	client     *http.Client
 	sendMsgUrl string
 )
 
-func init() {
+func Init() {
 	initClient()
 	initUrl()
 }
@@ -51,7 +54,7 @@ func ReplyMsg(receiver int64, msg string, autoEscape ...bool) error {
 	}
 	//如果要解析的话，需要做逃逸处理
 
-	message := ReplyMessage{
+	message := model.ReplyMessage{
 		UserId:     receiver,
 		Message:    msg,
 		AutoEscape: isAutoEscape,
