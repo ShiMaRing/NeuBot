@@ -16,11 +16,6 @@ import (
 const (
 	Timeout         = 5 * time.Second
 	JSONContentType = "application/json"
-	Menu            = `1.显示菜单
-                       2.注册账号
-                       3.打开或关闭每日课程提醒
-  					   4.打开或关闭每日健康上报
-                       5.注销账号`
 )
 
 var (

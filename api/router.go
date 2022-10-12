@@ -65,7 +65,10 @@ func GetMsg(c *gin.Context) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		//得到消息请求后，需要交给handler处理
+		go func() {
 
+		}()
 	default:
 		return
 	}
