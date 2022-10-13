@@ -24,6 +24,14 @@ type RequestReq struct {
 	Comment     string `json:"comment"`
 }
 
+// NoticeReq  添加好友时触发
+type NoticeReq struct {
+	BaseReq
+	PostType   string `json:"post_type"`
+	NoticeType string `json:"notice_type"`
+	UserId     int64  `json:"user_id"`
+}
+
 // Sender  消息发送者
 type Sender struct {
 	Nickname string `json:"nickname"`

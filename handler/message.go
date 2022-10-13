@@ -3,6 +3,7 @@ package handler
 import (
 	"NeuBot/internal/service"
 	"NeuBot/model"
+	"log"
 )
 
 const (
@@ -35,6 +36,10 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 	//此时可能为数字，乱发的消息
 	switch message {
 	case MenuMessage:
+		err := h.HandleMenuMessage(msg.UserID)
+		if err != nil {
+			log.Println(err)
+		}
 	case LoginMessage:
 	case CourseMessage:
 	case HealthMessage:
@@ -44,8 +49,9 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 
 }
 
-func (h *MessageHandler) HandleMenuMessage() {
-
+func (h *MessageHandler) HandleMenuMessage(qqNumber int64) error {
+	_, err := ReplyMsg(qqNumber, Menu, false)
+	return err
 }
 
 func (h *MessageHandler) HandleLoginMessage() {
