@@ -4,7 +4,6 @@ import (
 	"NeuBot/handler"
 	"NeuBot/model"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
@@ -17,6 +16,18 @@ const (
 	MetaEvent = "meta_event" //元事件, 例如, go-cqhttp 心跳包
 	AddFriend = "friend"
 )
+
+var noticeHandler *handler.NoticeHandler
+var msgHandler *handler.MessageHandler
+
+func init() {
+	var err error
+	noticeHandler = handler.NewNoticeHandler()
+	msgHandler, err = handler.NewMessageHandler()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
 
 // GetMsg Bot Api 接受来自cqhttp上报的信息,bot入口
 // 获取得到消息之后对消息类型进行判断，启动goroutine进行处理，需要使用线程池
@@ -37,8 +48,6 @@ func GetMsg(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println(baseReq)
-
 	switch baseReq.PostType {
 	case MetaEvent:
 	//元数据直接抛弃
@@ -50,11 +59,7 @@ func GetMsg(c *gin.Context) {
 		}
 		if noticeReq.RequestType == AddFriend {
 			go func() {
-				noticeHandler := handler.NewNoticeHandler(noticeReq)
-				err = noticeHandler.Greet()
-				if err != nil {
-					log.Fatalln(err)
-				}
+				noticeHandler.Greet(noticeReq)
 			}()
 		}
 	case Notice:
@@ -67,7 +72,7 @@ func GetMsg(c *gin.Context) {
 		}
 		//得到消息请求后，需要交给handler处理
 		go func() {
-
+			msgHandler.HandleMessage(message)
 		}()
 	default:
 		return

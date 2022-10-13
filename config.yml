@@ -18,5 +18,5 @@ cqhttp:
 bot:
   port: 8085 #启动端口
   idleThreadNum: 20 #线程池容量
-
+  master: 1150840779 #管理员QQ账号，支持群发以及接受反馈消息
 

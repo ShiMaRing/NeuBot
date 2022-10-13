@@ -11,7 +11,7 @@ type MsgReq struct {
 	BaseReq
 	Sender     `json:"sender"`
 	MessageID  int    `json:"message_id"`
-	UserID     int    `json:"user_id"`
+	UserID     int64  `json:"user_id"`
 	Message    string `json:"message"`
 	RawMessage string `json:"raw_message"`
 }
@@ -20,12 +20,12 @@ type MsgReq struct {
 type RequestReq struct {
 	BaseReq
 	RequestType string `json:"request_type"`
-	UserID      int    `json:"user_id"`
+	UserID      int64  `json:"user_id"`
 	Comment     string `json:"comment"`
 }
 
 // Sender  消息发送者
 type Sender struct {
 	Nickname string `json:"nickname"`
-	UserID   int    `json:"user_id"`
+	UserID   int64  `json:"user_id"`
 }
