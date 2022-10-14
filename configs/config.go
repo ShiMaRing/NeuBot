@@ -30,7 +30,8 @@ type cQHttpConf struct {
 }
 
 type botConfig struct {
-	Port int
+	Port     int
+	MasterId int64
 }
 
 // ConfigInit 读取Config
@@ -72,7 +73,8 @@ func ConfigInit() {
 
 	botMap := viper.GetStringMap("bot")
 	BotConf = &botConfig{
-		Port: botMap["port"].(int),
+		Port:     botMap["port"].(int),
+		MasterId: int64(botMap["master"].(int)),
 	}
 
 }

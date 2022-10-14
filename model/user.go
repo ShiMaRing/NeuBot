@@ -6,9 +6,8 @@ import (
 )
 
 const (
-	LOGOUT   int = 1 << iota //未登陆
-	Logining                 //正在登录
-	Logined                  //已登陆
+	LOGOUT  int = 1 << iota //未登陆
+	Logined                 //已登陆
 )
 
 const (

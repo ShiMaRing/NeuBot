@@ -31,3 +31,8 @@ func (u *UserDao) SetUser(user *model.User) error {
 func (u *UserDao) DeleteUser(qqNumber int64) error {
 	return u.cache.DeleteUser(qqNumber)
 }
+
+// UpdateUser 由于采用指针传递，缓存中的用户信息不需要改变,只需要改变数据库中的信息
+func (u *UserDao) UpdateUser(user *model.User) error {
+	return u.cache.UpdateUser(user)
+}

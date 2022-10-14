@@ -27,7 +27,10 @@ var limiter *tools.Limiter
 
 func init() {
 	var err error
-	noticeHandler = handler.NewNoticeHandler()
+	noticeHandler, err = handler.NewNoticeHandler()
+	if err != nil {
+		log.Fatalln(err)
+	}
 	msgHandler, err = handler.NewMessageHandler()
 	if err != nil {
 		log.Fatalln(err)

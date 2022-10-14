@@ -44,6 +44,18 @@ func (c *UserCache) SetUser(user *model.User) error {
 	}
 }
 
+func (c *UserCache) UpdateUser(user *model.User) error {
+	c.mu.Lock()
+	if _, ok := c.users[user.QQ]; ok {
+		c.users[user.QQ] = user
+		c.mu.Unlock()
+		return nil
+	} else {
+		c.mu.Unlock()
+		return model.UserNotFoundError
+	}
+}
+
 // GetUser 获取User实例
 func (c *UserCache) GetUser(qqNumber int64) (*model.User, error) {
 	c.mu.Lock()
@@ -58,8 +70,7 @@ func (c *UserCache) GetUser(qqNumber int64) (*model.User, error) {
 // DeleteUser 注销方法，注销用户
 func (c *UserCache) DeleteUser(qqNumber int64) error {
 	c.mu.Lock()
-
-	if _, ok := c.users[qqNumber]; !ok {
+	if _, ok := c.users[qqNumber]; ok {
 		delete(c.users, qqNumber)
 		c.mu.Unlock()
 		return nil
