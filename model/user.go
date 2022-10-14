@@ -5,13 +5,10 @@ import (
 	"net/http/cookiejar"
 )
 
-type State int
-
 const (
-	LOGOUT   State = 1 << iota //未登陆
-	Logining                   //正在登录
-	Logined                    //已登陆
-	FeedBack                   //正在填写回馈状态
+	LOGOUT   int = 1 << iota //未登陆
+	Logining                 //正在登录
+	Logined                  //已登陆
 )
 
 const (
@@ -25,7 +22,7 @@ type User struct {
 	QQ         int64         //qq号
 	StdNumber  string        //学号
 	Password   string        //密码
-	State      State         //当前状态
+	State      int           //当前状态
 	Perm       int           //用户权限
 	TimeTable  *TimeTable    //用户持有当前星期的课表
 	jar        cookiejar.Jar //记录登陆的jar，放便下次请求直接携带jar
