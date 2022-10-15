@@ -1,10 +1,5 @@
 package model
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
-
 // ClassTrans 课程的爬虫json形式
 type ClassTrans struct {
 	JSXM     string `json:"JSXM"`     //上课老师 注意去重
@@ -23,23 +18,16 @@ type ClassTrans struct {
 	ColorNum string `json:"colorNum"` //颜色数值
 }
 
-// TimeTable 定义一周课表
-// 每个用户都会与一个时间表关联，每个时间表会保存至数据库
-//一个时间表将与多个课程进行关联
-type TimeTable struct {
-	gorm.Model
-	StdNumber string
-	Courses   []*Course
-}
+type TimeTable []*Course
 
 // Course 课程，对爬虫获取的课程的解析结果，
-// 每次到时间点之前都要从缓存中遍历数据，挑选出合适的课程进行报送
+// 每次到时间点之前都要从缓存中遍历数据，挑选出合适的课程进行报送,用户端持有多个course实例
 type Course struct {
-	gorm.Model
-	WeekDay   int       //星期几上课 1~7表示周一到周日
-	ClassName string    //课程名
-	StartTime time.Time //课程开始时间
-	EndTime   time.Time //课程结束时间
-	place     string    //上课地点
-	teacher   string    //任课老师
+	UserID      uint   //外键，引用UserID
+	WeekDay     int    //星期几上课 1~7表示周一到周日
+	ClassName   string //课程名
+	Start       int    //第几节课
+	ClassLength int    //连续上几节
+	Place       string //上课地点
+	Teacher     string //任课老师
 }

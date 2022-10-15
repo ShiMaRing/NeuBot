@@ -11,9 +11,9 @@ import (
 )
 
 func TestAuth(t *testing.T) {
-	/*	_, token, err := AuthTest("20206759", "xgs583719992")
-		t.Log(token)
-		assert.NoError(t, err)*/
+	_, token, err := AuthWithAccount("20206759", "xgs583719992")
+	t.Log(token)
+	assert.NoError(t, err)
 	data := struct {
 	}{}
 	marshal, err := json.Marshal(data)
@@ -22,9 +22,10 @@ func TestAuth(t *testing.T) {
 	request.Header.Add("Accept", "application/json")
 	cookie := &http.Cookie{}
 	cookie.Name = "tp_up"
-	cookie.Value = "4kHakxVSZH63zXw6i72y16y6Tc09Qd2wWbeoFZ4jmmRqFV7PHWp4!380884168"
+	cookie.Value = token
 	request.AddCookie(cookie)
 	res, err := http.DefaultClient.Do(request)
+	fmt.Println(res.StatusCode)
 	assert.NoError(t, err)
 	all, err := ioutil.ReadAll(res.Body)
 	assert.NoError(t, err)

@@ -16,17 +16,6 @@ const (
 	Timeout   = 5 * time.Second
 )
 
-/*
-rsa:20206759xgs583719992LT-368544-jTeSIlu77aCfmqfRcGnj10qOe1LXAu-tpass
-ul:8
-pl:12
-lt:LT-368544-jTeSIlu77aCfmqfRcGnj10qOe1LXAu-tpass
-execution:e1s1
-_eventId:submit
-
-
-*/
-
 type Form struct {
 	rsa       string `json:"rsa,omitempty"`
 	ul        string `json:"ul,omitempty"`

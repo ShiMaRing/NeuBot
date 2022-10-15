@@ -10,3 +10,5 @@ var UserNotFoundError = fmt.Errorf("user not found")
 
 // MaxLoginError  已到达最大注册数
 var MaxLoginError = fmt.Errorf("get max login num")
+
+var PasswordIncorrectError = fmt.Errorf("password incorrect ")
