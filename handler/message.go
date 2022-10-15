@@ -176,7 +176,7 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 
 	ReplyMsg(msg.UserID, fmt.Sprintf("正在验证请稍后"))
 
-	success, err := spider.Auth(account, password)
+	success, token, err := spider.Auth(account, password)
 
 	if err != nil {
 		ReplyMsg(msg.UserID, fmt.Sprintf("验证失败\n 错误原因：\n %v", err))
@@ -188,6 +188,7 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	}
 	user.StdNumber = account
 	user.Password = password
+	user.Token = token
 	user.State = model.Logined
 	h.srv.UpdateUser(user) //更新用户信息
 	ReplyMsg(msg.UserID, "绑定账号成功")
