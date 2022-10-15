@@ -176,12 +176,13 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 
 	ReplyMsg(msg.UserID, fmt.Sprintf("正在验证请稍后"))
 
-	success, token, err := spider.Auth(account, password)
+	success, token, err := spider.AuthWithAccount(account, password)
 
 	if err != nil {
 		ReplyMsg(msg.UserID, fmt.Sprintf("验证失败\n 错误原因：\n %v", err))
 		return
 	}
+
 	if !success {
 		ReplyMsg(msg.UserID, "账号密码错误")
 		return

@@ -13,7 +13,7 @@ func testInit() {
 
 func TestReplyMsg(t *testing.T) {
 	testInit()
-	data, err := ReplyMsg(1150840779, "你好", false)
+	data, err := replyMsg(1150840779, "你好", false)
 	assert.NoError(t, err)
 	t.Log(string(data))
 }

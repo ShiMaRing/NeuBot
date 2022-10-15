@@ -41,9 +41,16 @@ func initUrl() {
 	port := configs.CqhttpConf.Port
 	sendMsgUrl = fmt.Sprintf("http://%s:%d/send_private_msg", address, port)
 }
+func ReplyMsg(receiver int64, msg string, autoEscape ...bool) {
+	res, err := replyMsg(receiver, msg, autoEscape...)
+	if err != nil {
+		log.Println(err)
+		log.Println(res)
+	}
+}
 
 // ReplyMsg 发送消息，需要指定是否需要进行转义，true则表示作为纯文本发送,默认选项
-func ReplyMsg(receiver int64, msg string, autoEscape ...bool) ([]byte, error) {
+func replyMsg(receiver int64, msg string, autoEscape ...bool) ([]byte, error) {
 
 	var isAutoEscape bool
 	//不传参默认为false，即不转解析直接发送

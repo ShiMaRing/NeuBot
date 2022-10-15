@@ -77,9 +77,7 @@ func AuthWithAccount(stdNum string, password string) (success bool, token string
 		field := v.Field(i).String()
 		formData[name] = field
 	}
-
 	url := "https://pass.neu.edu.cn/tpass/login;" + jsession_id + "?service=https://portal.neu.edu.cn/tp_up/"
-
 	c.OnRequest(func(req *colly.Request) {
 		req.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
 		req.Headers.Add("Referer", "https://pass.neu.edu.cn/tpass/login")
@@ -99,6 +97,9 @@ func AuthWithAccount(stdNum string, password string) (success bool, token string
 	err = c.Post(url, formData)
 	if err != nil {
 		return false, "", err
+	}
+	if token == "" {
+		return false, "", nil
 	}
 	return true, token, nil
 }
