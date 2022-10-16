@@ -36,3 +36,8 @@ func (s *UserService) DeleteUser(qqNumber int64) error {
 func (s *UserService) UpdateUser(user *model.User) error {
 	return s.dao.UpdateUser(user)
 }
+
+func (s *UserService) GetAllUser() ([]*model.User, error) {
+	return s.dao.GetAllUser()
+
+}

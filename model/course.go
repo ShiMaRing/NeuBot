@@ -23,11 +23,12 @@ type TimeTable []*Course
 // Course 课程，对爬虫获取的课程的解析结果，
 // 每次到时间点之前都要从缓存中遍历数据，挑选出合适的课程进行报送,用户端持有多个course实例
 type Course struct {
-	UserID      uint   //外键，引用UserID
-	WeekDay     int    //星期几上课 1~7表示周一到周日
-	ClassName   string //课程名
-	Start       int    //第几节课
-	ClassLength int    //连续上几节
-	Place       string //上课地点
-	Teacher     string //任课老师
+	UserID       uint   //外键，引用UserID
+	WeekDay      int    //星期几上课 1~7表示周一到周日
+	ClassName    string //课程名
+	Start        int    //第几节课
+	ClassLength  int    //连续上几节
+	Place        string //上课地点
+	Teacher      string //任课老师
+	IsSubmission bool   //是否已经报送，进行定时垃圾回收
 }

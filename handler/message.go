@@ -194,7 +194,6 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	h.srv.UpdateUser(user) //更新用户信息
 	ReplyMsg(msg.UserID, "绑定账号成功")
 	return
-
 }
 
 func buildTransmitMsg(msg *model.MsgReq) string {

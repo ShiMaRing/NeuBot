@@ -36,3 +36,7 @@ func (u *UserDao) DeleteUser(qqNumber int64) error {
 func (u *UserDao) UpdateUser(user *model.User) error {
 	return u.cache.UpdateUser(user)
 }
+
+func (u *UserDao) GetAllUser() ([]*model.User, error) {
+	return u.cache.GetAllUser()
+}

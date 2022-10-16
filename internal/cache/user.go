@@ -45,15 +45,7 @@ func (c *UserCache) SetUser(user *model.User) error {
 }
 
 func (c *UserCache) UpdateUser(user *model.User) error {
-	c.mu.Lock()
-	if _, ok := c.users[user.QQ]; ok {
-		c.users[user.QQ] = user
-		c.mu.Unlock()
-		return nil
-	} else {
-		c.mu.Unlock()
-		return model.UserNotFoundError
-	}
+	return nil
 }
 
 // GetUser 获取User实例
@@ -86,4 +78,15 @@ func (c *UserCache) CleanTimeTable() {
 		user.TimeTable = nil
 	}
 	c.mu.Unlock()
+}
+
+// GetAllUser 获取所有用户
+func (c *UserCache) GetAllUser() ([]*model.User, error) {
+	users := make([]*model.User, 0)
+	c.mu.Lock()
+	for k := range c.users {
+		users = append(users, c.users[k])
+	}
+	c.mu.Unlock()
+	return users, nil
 }

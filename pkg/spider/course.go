@@ -169,7 +169,6 @@ func buildPostReq(url string, data []byte, cookie *http.Cookie) *http.Request {
 		//说明携带空请求
 		data, _ = json.Marshal(struct{}{})
 	}
-
 	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(data))
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Accept", "application/json")
