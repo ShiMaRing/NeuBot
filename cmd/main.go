@@ -17,6 +17,11 @@ func init() {
 
 //程序入口
 func main() {
+	//启动定时任务
+	err := handler.StartSchedule()
+	if err != nil {
+		log.Fatalln("启动定时任务失败", err)
+	}
 	router := gin.Default()
 	router.POST("/", api.GetMsg)
 	if err := router.Run(fmt.Sprintf(":%d", configs.BotConf.Port)); err != nil {

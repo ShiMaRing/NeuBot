@@ -58,6 +58,7 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 	case LoginMessage:
 		h.handleLoginMessage(msg.UserID)
 	case SubCourseMessage:
+		h.handleSubCourseMessage(msg.UserID)
 	case UnSubCourseMessage:
 	case SubHealthMessage:
 	case UnSubHealthMessage:
@@ -67,6 +68,33 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 		//说明用户在输入其他内容，此时需要查询用户状态进行判断
 		h.handleUnknownMessage(msg)
 	}
+}
+
+//订阅课程上报
+func (h *MessageHandler) handleSubCourseMessage(qqNumber int64) {
+	user, err := h.srv.GetUser(qqNumber)
+	if err != nil {
+		h.subCourseFail(qqNumber, err)
+		return
+	}
+	//获取到用户信息之后进行校验
+	if user.State == model.LOGOUT {
+		ReplyMsg(qqNumber, "请先绑定账号")
+		return
+	}
+	//否则进行汇报逻辑
+	ReplyMsg(qqNumber, "正在获取本周课表,请稍后")
+	course, err := spider.GetCourse(user)
+	if err != nil {
+		h.subCourseFail(qqNumber, err)
+		return
+	}
+	user.Mu.Lock()
+	user.TimeTable = course
+	user.Perm = user.Perm | model.CoursePerm
+	user.Mu.Unlock()
+	ReplyMsg(qqNumber, "获取课表成功,订阅成功")
+	return
 }
 
 func (h *MessageHandler) handleMenuMessage(qqNumber int64) {
@@ -216,6 +244,10 @@ func (h *MessageHandler) loginFail(id int64, err error) {
 
 func (h *MessageHandler) logoutFail(id int64, err error) {
 	ReplyMsg(id, fmt.Sprintf("系统错误，暂时无法解绑，错误信息\n %v", err))
+	logError(err)
+}
+func (h *MessageHandler) subCourseFail(id int64, err error) {
+	ReplyMsg(id, fmt.Sprintf("订阅课程提醒失败，错误信息\n %v", err))
 	logError(err)
 }
 
