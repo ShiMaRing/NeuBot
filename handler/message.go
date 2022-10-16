@@ -60,13 +60,47 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 	case SubCourseMessage:
 		h.handleSubCourseMessage(msg.UserID)
 	case UnSubCourseMessage:
+		h.handleUnSubCourseMessage(msg.UserID)
 	case SubHealthMessage:
+		h.handleDisabledMessage(msg.UserID)
 	case UnSubHealthMessage:
+		h.handleDisabledMessage(msg.UserID)
 	case LogoutMessage:
 		h.handleLogoutMessage(msg.UserID)
 	default:
 		//说明用户在输入其他内容，此时需要查询用户状态进行判断
 		h.handleUnknownMessage(msg)
+	}
+}
+func (h *MessageHandler) handleDisabledMessage(qqNumber int64) {
+	ReplyMsg(qqNumber, "尚未实现")
+}
+
+//取消课程提醒
+func (h *MessageHandler) handleUnSubCourseMessage(qqNumber int64) {
+	user, err := h.srv.GetUser(qqNumber)
+	if err != nil {
+		h.subCourseFail(qqNumber, err)
+		return
+	}
+	//获取到用户信息之后进行校验
+	if user.State == model.LOGOUT {
+		ReplyMsg(qqNumber, "请先绑定账号")
+		return
+	}
+	//判断用户权限
+	if user.Perm&model.CoursePerm != 0 {
+		user.Perm = user.Perm & (^model.CoursePerm)
+		user.Mu.Lock()
+		defer user.Mu.Unlock()
+		if user.TimeTable != nil {
+			for i := range user.TimeTable {
+				course := user.TimeTable[i]
+				course.IsSubmission = true //等待定时回收
+			}
+		}
+		ReplyMsg(qqNumber, "取消订阅成功")
+		return
 	}
 }
 
@@ -82,6 +116,11 @@ func (h *MessageHandler) handleSubCourseMessage(qqNumber int64) {
 		ReplyMsg(qqNumber, "请先绑定账号")
 		return
 	}
+	if user.Perm&model.CoursePerm != 0 {
+		ReplyMsg(qqNumber, "请勿重复订阅")
+		return
+	}
+
 	//否则进行汇报逻辑
 	ReplyMsg(qqNumber, "正在获取本周课表,请稍后")
 	course, err := spider.GetCourse(user)
