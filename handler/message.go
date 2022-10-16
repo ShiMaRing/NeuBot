@@ -24,8 +24,7 @@ const (
 	SubHealthMessage          = "5"
 	UnSubHealthMessage        = "6"
 	LogoutMessage             = "7"
-
-	FeedBackPrefix = "feedback"
+	FeedBackPrefix            = "feedback"
 )
 
 const (

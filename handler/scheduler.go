@@ -76,7 +76,7 @@ func (h *schedulerHandler) submission() {
 		go func(i int) {
 			user := users[i]
 			//校验用户权限
-			if user.Perm&model.CoursePerm == 0 {
+			if user.Perm&model.CoursePerm == 0 || user.State == model.LOGOUT {
 				//说明没有权限
 				return
 			}

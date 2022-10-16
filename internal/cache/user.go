@@ -63,7 +63,19 @@ func (c *UserCache) GetUser(qqNumber int64) (*model.User, error) {
 func (c *UserCache) DeleteUser(qqNumber int64) error {
 	c.mu.Lock()
 	if _, ok := c.users[qqNumber]; ok {
-		delete(c.users, qqNumber)
+		user := c.users[qqNumber]
+		user.Mu.Lock()
+		user.State = model.LOGOUT
+		user.Perm = 0
+		user.StdNumber = ""
+		user.Password = ""
+		table := user.TimeTable
+		if table != nil {
+			for i := range table {
+				table[i].IsSubmission = true
+			}
+		}
+		user.Mu.Unlock()
 		c.mu.Unlock()
 		return nil
 	}
