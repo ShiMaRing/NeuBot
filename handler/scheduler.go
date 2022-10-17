@@ -8,6 +8,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"log"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -36,6 +37,7 @@ func init() {
 		11: 4,
 		13: 5,
 		14: 6,
+		16: 7,
 		17: 8,
 		18: 9,
 		19: 10,
@@ -59,6 +61,7 @@ func newSchedulerHandler() (*schedulerHandler, error) {
 
 func (h *schedulerHandler) submission() {
 	//每次寻找对应时间的消息，需要获取当前时间
+	log.Println("开始执行: ", time.Now())
 	now := time.Now()
 	weekday := now.Weekday() //注意星期天为0，而数据中为7
 	if weekday == time.Sunday {
@@ -71,9 +74,13 @@ func (h *schedulerHandler) submission() {
 	//此时用户应当已经与课程完成关联
 	if err != nil {
 		log.Println(err) //查找失败
+		return
 	}
+	group := sync.WaitGroup{}
 	for i := range users {
+		group.Add(1)
 		go func(i int) {
+			defer group.Done()
 			user := users[i]
 			//校验用户权限
 			if user.Perm&model.CoursePerm == 0 || user.State == model.LOGOUT {
@@ -96,9 +103,11 @@ func (h *schedulerHandler) submission() {
 				msg := buildMsg(course)
 				course.IsSubmission = true //表示已经发送完成
 				replyMsg(user.QQ, msg, false)
+				fmt.Println("发送消息", user.QQ, msg)
 			}
 		}(i)
 	}
+	group.Wait()
 }
 
 //刷新课程信息
@@ -145,12 +154,30 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	c := cron.New()
-	_, err = c.AddFunc("0 20 8,9,18,19,20,21 * * *", func() { handler.submission() })
-	_, err = c.AddFunc("0 30 10,11 * * *", func() { handler.submission() })
-	_, err = c.AddFunc("0 50 13,14 * * *", func() { handler.submission() })
-	_, err = c.AddFunc("10 0 16,17 * * *", func() { handler.submission() })
-	_, err = c.AddFunc("* * 1 * * 7 ", func() { handler.refreshCourse() })
+	c := cron.New(cron.WithSeconds())
+	_, err = c.AddFunc("* 20 8,9,18,19,20,21 * * ? ", func() { handler.submission() })
+	if err != nil {
+		return err
+	}
+	_, err = c.AddFunc("* 41 10,11 * * ?", func() { handler.submission() })
+	if err != nil {
+		return err
+	}
+	_, err = c.AddFunc("* 50 13,14 * * ?", func() { handler.submission() })
+	if err != nil {
+		return err
+	}
+	_, err = c.AddFunc("10 0 16,17 * * ?", func() { handler.submission() })
+	if err != nil {
+		return err
+	}
+
+	_, err = c.AddFunc("0/5 * * * * ?", func() { handler.submission() })
+	if err != nil {
+		return err
+	}
+
+	_, err = c.AddFunc("* * 1 ? * 7 ", func() { handler.refreshCourse() })
 	c.Start()
 	return nil
 }

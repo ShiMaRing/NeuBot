@@ -8,6 +8,9 @@ import (
 
 const MaxSize = 100
 
+var once = sync.Once{}
+var cache *UserCache
+
 //回收器，定时回收更新cache中的TimeTable
 type janitor struct {
 	Interval time.Duration
@@ -22,9 +25,14 @@ type UserCache struct {
 }
 
 func NewUserCache() *UserCache {
-	return &UserCache{
-		users: make(map[int64]*model.User, MaxSize),
-	}
+	once.Do(func() {
+		cache = &UserCache{
+			mu:      sync.RWMutex{},
+			users:   make(map[int64]*model.User, MaxSize),
+			janitor: nil,
+		}
+	})
+	return cache
 }
 
 // SetUser 设置User
