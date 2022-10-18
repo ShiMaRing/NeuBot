@@ -71,6 +71,11 @@ func (u *UserDao) SetUser(user *model.User) error {
 	return u.cache.SetUser(user)
 }
 
+// CacheUser
+func (u *UserDao) CacheUser(user *model.User) error {
+	return u.cache.SetUser(user)
+}
+
 // UnbindUser  注销，解除与账号密码的绑定
 func (u *UserDao) UnbindUser(qqNumber int64) error {
 	user, err := u.GetUser(qqNumber)
@@ -116,4 +121,17 @@ func (u *UserDao) GetAllUser() ([]*model.User, error) {
 		}
 	}
 	return users, nil
+}
+
+// CleanAllCourse 清理所有课程信息
+func (u *UserDao) CleanAllCourse() error {
+	res := u.db.Where("1=1").Unscoped().Delete(&model.Course{})
+	u.cache.CleanTimeTable()
+	return res.Error
+}
+
+// CleanUp 清理已发送的数据
+func (u *UserDao) CleanUp() error {
+	res := u.db.Where("is_submission = ?", 1).Unscoped().Delete(&model.Course{})
+	return res.Error
 }

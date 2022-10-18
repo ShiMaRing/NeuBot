@@ -27,9 +27,12 @@ func (s *UserService) GetUser(qqNumber int64) (*model.User, error) {
 func (s *UserService) SetUser(user *model.User) error {
 	return s.dao.SetUser(user)
 }
+func (s *UserService) CacheUser(user *model.User) error {
+	return s.dao.CacheUser(user)
+}
 
-// DeleteUser 逻辑为删除用户账号密码并切换状态为未登陆
-func (s *UserService) DeleteUser(qqNumber int64) error {
+// UnbindUser 逻辑为删除用户账号密码并切换状态为未登陆
+func (s *UserService) UnbindUser(qqNumber int64) error {
 	return s.dao.UnbindUser(qqNumber)
 }
 
@@ -39,5 +42,12 @@ func (s *UserService) UpdateUser(user *model.User) error {
 
 func (s *UserService) GetAllUser() ([]*model.User, error) {
 	return s.dao.GetAllUser()
+}
 
+func (s *UserService) CleanUp() error {
+	return s.dao.CleanUp()
+}
+
+func (s *UserService) CleanAllCourse() error {
+	return s.dao.CleanAllCourse()
 }

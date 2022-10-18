@@ -74,12 +74,10 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	err := testInit()
 	assert.NoError(t, err)
-	user, err := userDao.GetUser(1150840779)
 	assert.NoError(t, err)
 	user.StdNumber = "hdakdajd"
 	user.Password = "dadada"
 	user.TimeTable[0].Teacher = "xgs"
-	user.TimeTable[1].Teacher = "ili"
 	userDao.UpdateUser(user)
 	assert.NoError(t, err)
 	fmt.Println(user)
@@ -93,4 +91,12 @@ func TestGetAllUser(t *testing.T) {
 	for i := range allUser {
 		fmt.Println(*allUser[i])
 	}
+}
+
+func TestCleanUp(t *testing.T) {
+	err := testInit()
+	assert.NoError(t, err)
+	err = userDao.CleanUp()
+	assert.NoError(t, err)
+
 }

@@ -190,7 +190,7 @@ func (h *MessageHandler) handleLogoutMessage(id int64) {
 	if user.State&model.Logined == 0 {
 		ReplyMsg(id, "解绑失败，尚未绑定账号")
 	} else {
-		err := h.srv.DeleteUser(id)
+		err := h.srv.UnbindUser(id)
 		if err != nil {
 			h.logoutFail(id, err)
 			return
@@ -257,8 +257,11 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	user.Password = password
 	user.Token = token
 	user.State = model.Logined
-	h.srv.UpdateUser(user) //更新用户信息
-	ReplyMsg(msg.UserID, "绑定账号成功")
+	err = h.srv.UpdateUser(user)
+	if err != nil {
+		ReplyMsg(msg.UserID, fmt.Sprintf("绑定失败\n 错误原因：\n %v", err))
+		return
+	} //更新用户信息
 	return
 }
 

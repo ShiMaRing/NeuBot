@@ -151,6 +151,16 @@ func buildMsg(course *model.Course) string {
 func StartSchedule() error {
 	var err error
 	handler, err := newSchedulerHandler()
+	users, err := handler.srv.GetAllUser()
+	if err != nil {
+		return err
+	}
+	for i := range users {
+		err := handler.srv.CacheUser(users[i])
+		if err != nil {
+			return err
+		}
+	}
 	if err != nil {
 		return err
 	}
@@ -171,7 +181,17 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* * 1 ? * 7 ", func() { handler.refreshCourse() })
+	_, err = c.AddFunc("@midnight", func() { handler.srv.CleanUp() })
+	if err != nil {
+		return err
+	}
+	_, err = c.AddFunc("* * 1 ? * 7 ", func() {
+		handler.srv.CleanAllCourse() //先清除
+		handler.refreshCourse()
+	})
+	if err != nil {
+		return err
+	}
 	c.Start()
 	return nil
 }
