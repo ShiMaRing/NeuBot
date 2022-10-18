@@ -13,6 +13,7 @@ func init() {
 	//初始化配置文件
 	configs.ConfigInit()
 	handler.Init()
+	api.InitRouter()
 }
 
 //程序入口

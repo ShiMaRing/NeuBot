@@ -25,7 +25,7 @@ var noticeHandler *handler.NoticeHandler
 var msgHandler *handler.MessageHandler
 var limiter *tools.Limiter
 
-func init() {
+func InitRouter() {
 	var err error
 	noticeHandler, err = handler.NewNoticeHandler()
 	if err != nil {

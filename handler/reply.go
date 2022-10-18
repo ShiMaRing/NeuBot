@@ -27,7 +27,6 @@ var (
 func Init() {
 	initClient()
 	initUrl()
-
 }
 
 //后期可以根据性能进行优化

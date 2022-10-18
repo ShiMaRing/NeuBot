@@ -151,15 +151,9 @@ func buildMsg(course *model.Course) string {
 func StartSchedule() error {
 	var err error
 	handler, err := newSchedulerHandler()
-	users, err := handler.srv.GetAllUser()
+	handler.srv.GetAllUser()
 	if err != nil {
 		return err
-	}
-	for i := range users {
-		err := handler.srv.CacheUser(users[i])
-		if err != nil {
-			return err
-		}
 	}
 	if err != nil {
 		return err

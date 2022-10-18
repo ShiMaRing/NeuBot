@@ -71,7 +71,7 @@ func (u *UserDao) SetUser(user *model.User) error {
 	return u.cache.SetUser(user)
 }
 
-// CacheUser
+// CacheUser  缓存用户
 func (u *UserDao) CacheUser(user *model.User) error {
 	return u.cache.SetUser(user)
 }
@@ -117,7 +117,7 @@ func (u *UserDao) GetAllUser() ([]*model.User, error) {
 		//可能出现update失败的情况
 		for i := range users {
 			user := users[i]
-			u.cache.SetUser(user)
+			u.CacheUser(user)
 		}
 	}
 	return users, nil
