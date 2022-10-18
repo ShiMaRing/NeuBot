@@ -159,7 +159,7 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* 41 10,11 * * ?", func() { handler.submission() })
+	_, err = c.AddFunc("* 30 10,11 * * ?", func() { handler.submission() })
 	if err != nil {
 		return err
 	}
@@ -171,28 +171,7 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-
-	_, err = c.AddFunc("0/5 * * * * ?", func() { handler.submission() })
-	if err != nil {
-		return err
-	}
-
 	_, err = c.AddFunc("* * 1 ? * 7 ", func() { handler.refreshCourse() })
 	c.Start()
 	return nil
 }
-
-/*
-1节 8:30-9:20
-2节 9:30-10:20
-3节 10:40-11:30
-4节 11:40-12:30
-5节14:00-14:50
-6节 15:00-15:50
-7节 16:10-17:00
-8节 17:10-18:00
-9节 18:30-19:20
-10节 19:30-20:20
-11节 20:30-21:20
-12节 21:30-22:20
-*/

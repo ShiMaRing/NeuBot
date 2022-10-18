@@ -1,5 +1,9 @@
 package model
 
+import (
+	"gorm.io/gorm"
+)
+
 // ClassTrans 课程的爬虫json形式
 type ClassTrans struct {
 	JSXM     string `json:"JSXM"`     //上课老师 注意去重
@@ -23,6 +27,7 @@ type TimeTable []*Course
 // Course 课程，对爬虫获取的课程的解析结果，
 // 每次到时间点之前都要从缓存中遍历数据，挑选出合适的课程进行报送,用户端持有多个course实例
 type Course struct {
+	gorm.Model
 	UserID       uint   //外键，引用UserID
 	WeekDay      int    //星期几上课 1~7表示周一到周日
 	ClassName    string //课程名

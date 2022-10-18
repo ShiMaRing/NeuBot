@@ -30,7 +30,7 @@ func (s *UserService) SetUser(user *model.User) error {
 
 // DeleteUser 逻辑为删除用户账号密码并切换状态为未登陆
 func (s *UserService) DeleteUser(qqNumber int64) error {
-	return s.dao.DeleteUser(qqNumber)
+	return s.dao.UnbindUser(qqNumber)
 }
 
 func (s *UserService) UpdateUser(user *model.User) error {

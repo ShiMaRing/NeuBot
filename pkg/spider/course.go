@@ -109,14 +109,14 @@ func process(data []byte, user *model.User) (model.TimeTable, error) {
 	for i := range originCourses {
 		originCourse := originCourses[i]
 		//获取原始课程信息
-		course := convert2Course(originCourse)
+		course := convert2Course(originCourse, user)
 		courses = append(courses, course)
 	}
 	return courses, nil
 }
 
 //信息转化
-func convert2Course(tmp *model.ClassTrans) *model.Course {
+func convert2Course(tmp *model.ClassTrans, user *model.User) *model.Course {
 	weekDay, _ := strconv.Atoi(tmp.SKXQ)
 	className := removeDup(tmp.KCMC)
 	place := removeDup(tmp.JXDD)
@@ -124,6 +124,7 @@ func convert2Course(tmp *model.ClassTrans) *model.Course {
 	start, _ := strconv.Atoi(tmp.SKJC)
 	length, _ := strconv.Atoi(tmp.CXJC)
 	return &model.Course{
+		UserID:      user.ID,
 		WeekDay:     weekDay,
 		ClassName:   className,
 		Start:       start,

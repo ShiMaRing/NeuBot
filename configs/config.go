@@ -40,7 +40,7 @@ func ConfigInit() {
 	viper.SetConfigType("yml")
 	viper.AddConfigPath("../")
 	viper.AddConfigPath("./")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("../../")
 	viper.AddConfigPath("/")
 
 	if err := viper.ReadInConfig(); err != nil {

@@ -5,11 +5,11 @@ redis:
   password:
 
 mysql:
-  address: 101.43.161.75
+  address: localhost
   port:   3306
-  database: neuBot
-  user: xgs
-  password: xgs1150840779
+  database: neubot
+  user: root
+  password: xgs583719992
 
 cqhttp:
   address: 0.0.0.0

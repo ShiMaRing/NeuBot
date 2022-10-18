@@ -42,18 +42,10 @@ func (c *UserCache) SetUser(user *model.User) error {
 		c.mu.Unlock()
 		return model.DupStdError
 	} else {
-		//检查是否到达最大注册人数
-		if len(c.users) >= MaxSize {
-			return model.MaxLoginError
-		}
 		c.users[user.QQ] = user
 		c.mu.Unlock()
 		return nil
 	}
-}
-
-func (c *UserCache) UpdateUser(user *model.User) error {
-	return nil
 }
 
 // GetUser 获取User实例
@@ -67,8 +59,20 @@ func (c *UserCache) GetUser(qqNumber int64) (*model.User, error) {
 	return nil, model.UserNotFoundError
 }
 
-// DeleteUser 注销方法，注销用户
+// DeleteUser 删除用户缓存
 func (c *UserCache) DeleteUser(qqNumber int64) error {
+	c.mu.Lock()
+	user, ok := c.users[qqNumber]
+	if ok {
+		delete(c.users, user.QQ)
+		c.mu.Unlock()
+		return nil
+	}
+	return model.UserNotFoundError
+}
+
+// UnbindUser 注销方法，注销用户
+func (c *UserCache) UnbindUser(qqNumber int64) error {
 	c.mu.Lock()
 	if _, ok := c.users[qqNumber]; ok {
 		user := c.users[qqNumber]
@@ -109,4 +113,11 @@ func (c *UserCache) GetAllUser() ([]*model.User, error) {
 	}
 	c.mu.Unlock()
 	return users, nil
+}
+
+func (c *UserCache) Size() int {
+	c.mu.Lock()
+	size := len(c.users)
+	c.mu.Unlock()
+	return size
 }
