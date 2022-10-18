@@ -179,7 +179,7 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* * 1 ? * 7 ", func() {
+	_, err = c.AddFunc("* * 1 ? * 0 ", func() {
 		handler.srv.CleanAllCourse() //先清除
 		handler.refreshCourse()
 	})
