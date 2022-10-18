@@ -8,8 +8,8 @@ mysql:
   address: localhost
   port:   3306
   database: neubot
-  user: root
-  password: xgs583719992
+  user: neubot
+  password:
 
 cqhttp:
   address: 0.0.0.0
@@ -18,5 +18,5 @@ cqhttp:
 bot:
   port: 8085 #启动端口
   idleThreadNum: 20 #线程池容量
-  master: 1150840779 #管理员QQ账号，支持群发以及接受反馈消息
+  master:  1150840779 #管理员QQ账号，支持群发以及接受反馈消息,目前尚未实现群发
 

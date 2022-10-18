@@ -49,6 +49,10 @@ func (u *UserDao) GetUser(qqNumber int64) (*model.User, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
+	//找不到该用户
+	if user.ID == 0 {
+		return nil, model.UserNotFoundError
+	}
 	return &user, nil
 }
 
@@ -101,7 +105,7 @@ func (u *UserDao) UnbindUser(qqNumber int64) error {
 
 // UpdateUser 由于采用指针传递，缓存中的用户信息不需要改变,只需要改变数据库中的信息
 func (u *UserDao) UpdateUser(user *model.User) error {
-	result := u.db.Session(&gorm.Session{FullSaveAssociations: true}).Where("qq= ?", user.QQ).Updates(user)
+	result := u.db.Session(&gorm.Session{FullSaveAssociations: true}).Where("qq= ?", user.QQ).Save(user)
 	return result.Error
 }
 

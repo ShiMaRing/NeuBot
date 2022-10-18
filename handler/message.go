@@ -98,7 +98,12 @@ func (h *MessageHandler) handleUnSubCourseMessage(qqNumber int64) {
 				course.IsSubmission = true //等待定时回收
 			}
 		}
-		ReplyMsg(qqNumber, "取消订阅成功")
+		err := h.srv.UpdateUser(user)
+		if err != nil {
+			ReplyMsg(qqNumber, fmt.Sprintf("取消订阅失败,失败原因：%v", err))
+			log.Println(err)
+		}
+		ReplyMsg(qqNumber, fmt.Sprintf("取消订阅成功"))
 		return
 	}
 }
@@ -131,6 +136,10 @@ func (h *MessageHandler) handleSubCourseMessage(qqNumber int64) {
 	user.TimeTable = course
 	user.Perm = user.Perm | model.CoursePerm
 	user.Mu.Unlock()
+	err = h.srv.UpdateUser(user)
+	if err != nil {
+		log.Println(err)
+	}
 	ReplyMsg(qqNumber, "获取课表成功,订阅成功")
 	return
 }
@@ -262,6 +271,7 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 		ReplyMsg(msg.UserID, fmt.Sprintf("绑定失败\n 错误原因：\n %v", err))
 		return
 	} //更新用户信息
+	ReplyMsg(msg.UserID, "绑定账号成功 ")
 	return
 }
 

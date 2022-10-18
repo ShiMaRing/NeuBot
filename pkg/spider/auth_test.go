@@ -11,7 +11,7 @@ import (
 )
 
 func TestAuth(t *testing.T) {
-	_, token, err := AuthWithAccount("20206759", "xgs583719992")
+	_, token, err := AuthWithAccount("", "")
 	t.Log(token)
 	assert.NoError(t, err)
 	data := struct {

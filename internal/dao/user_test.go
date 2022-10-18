@@ -21,8 +21,8 @@ func testInit() error {
 	//添加数据
 	user = &model.User{
 		QQ:        1150840779,
-		StdNumber: "20206759",
-		Password:  "xgs583719992",
+		StdNumber: "",
+		Password:  "",
 		State:     model.Logined,
 		Perm:      model.CoursePerm,
 		TimeTable: []*model.Course{

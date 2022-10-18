@@ -23,7 +23,8 @@ func main() {
 	if err != nil {
 		log.Fatalln("启动定时任务失败", err)
 	}
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
 	router.POST("/", api.GetMsg)
 	if err := router.Run(fmt.Sprintf(":%d", configs.BotConf.Port)); err != nil {
 		log.Fatalln(err)
