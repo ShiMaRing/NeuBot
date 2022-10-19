@@ -103,7 +103,8 @@ func (h *schedulerHandler) submission() {
 				msg := buildMsg(course)
 				course.IsSubmission = true //表示已经发送完成
 				replyMsg(user.QQ, msg, false)
-				fmt.Println("发送消息", user.QQ, msg)
+				fmt.Println("发送消息", user.QQ, msg) //此时需要更新所有课程
+				h.srv.SaveCourse(course)
 			}
 		}(i)
 	}
@@ -151,23 +152,23 @@ func buildMsg(course *model.Course) string {
 func StartSchedule() error {
 	var err error
 	handler, err := newSchedulerHandler()
-	handler.srv.GetAllUser()
 	if err != nil {
 		return err
 	}
+	err = handler.srv.RebuildUsers()
 	if err != nil {
 		return err
 	}
 	c := cron.New(cron.WithSeconds())
-	_, err = c.AddFunc("* 20 8,9,18,19,20,21 * * ? ", func() { handler.submission() })
+	_, err = c.AddFunc("0 20 8,9,18,19,20,21 * * ? ", func() { handler.submission() })
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* 30 10,11 * * ?", func() { handler.submission() })
+	_, err = c.AddFunc("0 30 10,11 * * ?", func() { handler.submission() })
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* 50 13,14 * * ?", func() { handler.submission() })
+	_, err = c.AddFunc("0 50 13,14 * * ?", func() { handler.submission() })
 	if err != nil {
 		return err
 	}
@@ -179,7 +180,7 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("* * 1 ? * 0 ", func() {
+	_, err = c.AddFunc("0 0 1 ? * 0 ", func() {
 		handler.srv.CleanAllCourse() //先清除
 		handler.refreshCourse()
 	})

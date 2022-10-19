@@ -51,3 +51,11 @@ func (s *UserService) CleanUp() error {
 func (s *UserService) CleanAllCourse() error {
 	return s.dao.CleanAllCourse()
 }
+
+func (s *UserService) RebuildUsers() error {
+	return s.dao.RebuildUsers()
+}
+
+func (s *UserService) SaveCourse(course *model.Course) error {
+	return s.dao.UpdateCourse(course)
+}

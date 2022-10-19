@@ -109,22 +109,22 @@ func (u *UserDao) UpdateUser(user *model.User) error {
 	return result.Error
 }
 
-// GetAllUser 获取所有用户实例,直接查询数据库
+// GetAllUser 获取所有用户实例，直接查询缓存
 func (u *UserDao) GetAllUser() ([]*model.User, error) {
+	return u.cache.GetAllUser()
+}
+
+// RebuildUsers 重新组件所有用户信息
+func (u *UserDao) RebuildUsers() error {
 	users := make([]*model.User, 0)
-	result := u.db.Preload("TimeTable").Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
+	res := u.db.Find(&users)
+	if res.Error != nil {
+		return res.Error
 	}
-	//缓存丢失,恢复缓存
-	if u.cache.Size() != len(users) {
-		//可能出现update失败的情况
-		for i := range users {
-			user := users[i]
-			u.CacheUser(user)
-		}
+	for i := range users {
+		u.cache.SetUser(users[i])
 	}
-	return users, nil
+	return nil
 }
 
 // CleanAllCourse 清理所有课程信息
@@ -137,5 +137,11 @@ func (u *UserDao) CleanAllCourse() error {
 // CleanUp 清理已发送的数据
 func (u *UserDao) CleanUp() error {
 	res := u.db.Where("is_submission = ?", 1).Unscoped().Delete(&model.Course{})
+	return res.Error
+}
+
+// UpdateCourse 更新课程信息
+func (u *UserDao) UpdateCourse(course *model.Course) error {
+	res := u.db.Where("id=?", course.ID).Save(course)
 	return res.Error
 }
