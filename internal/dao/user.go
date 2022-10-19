@@ -117,7 +117,7 @@ func (u *UserDao) GetAllUser() ([]*model.User, error) {
 // RebuildUsers 重新组件所有用户信息
 func (u *UserDao) RebuildUsers() error {
 	users := make([]*model.User, 0)
-	res := u.db.Find(&users)
+	res := u.db.Preload("TimeTable").Find(&users)
 	if res.Error != nil {
 		return res.Error
 	}
