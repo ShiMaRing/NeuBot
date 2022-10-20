@@ -34,6 +34,12 @@ type botConfig struct {
 	MasterId int64
 }
 
+type chatConfig struct {
+	AppId     string
+	AppSecret string
+	Enable    bool
+}
+
 // ConfigInit 读取Config
 func ConfigInit() {
 	viper.SetConfigName("config")
@@ -78,6 +84,21 @@ func ConfigInit() {
 	BotConf = &botConfig{
 		Port:     botMap["port"].(int),
 		MasterId: int64(botMap["master"].(int)),
+	}
+
+	chatMap := viper.GetStringMap("chat")
+	enable = chatMap["enable"].(bool) //是否允许调用
+
+	if enable {
+		ChatConf = &chatConfig{
+			AppId:     chatMap["appId"].(string),
+			AppSecret: chatMap["appSecret"].(string),
+			Enable:    true,
+		}
+	} else {
+		ChatConf = &chatConfig{
+			Enable: false,
+		}
 	}
 
 }

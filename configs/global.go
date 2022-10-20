@@ -8,4 +8,6 @@ var (
 	CqhttpConf *cQHttpConf
 
 	BotConf *botConfig
+
+	ChatConf *chatConfig
 )
