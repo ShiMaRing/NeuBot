@@ -8,19 +8,19 @@ mysql:
   address: localhost
   port: 3306
   database: neubot
-  user: neubot
-  password:
+  user: root
+  password: xgs583719992
 
 cqhttp:
   address: 0.0.0.0
-  port: 5700
+  port: 3050
 
 bot:
-  port: 8085 #启动端口
+  port: 3005 #启动端口
   idleThreadNum: 20 #线程池容量
   master: 1150840779 #管理员QQ账号，支持群发以及接受反馈消息,目前尚未实现群发
 
-cloud:
-  appId: xxxxx  #调用腾讯云chat接口的id
-  appSecret: xxxxx  #调用腾讯云chat接口的密钥
-  enable: false   #是否调用聊天api
+chat:
+  appId: xxxxxxxxxxxxxxxxx  #调用腾讯云chat接口的id
+  appSecret: xxxxxxxxxxxxxxxxxx  #调用腾讯云chat接口的密钥
+  enable: true   #是否调用聊天api

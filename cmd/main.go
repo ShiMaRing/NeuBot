@@ -16,7 +16,6 @@ func init() {
 	api.InitRouter()
 }
 
-//程序入口
 func main() {
 	//启动定时任务
 	err := handler.StartSchedule()

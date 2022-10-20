@@ -34,6 +34,7 @@ const (
 
 type MessageHandler struct {
 	srv *service.UserService
+	*ChatHandler
 }
 
 // NewMessageHandler 构造函数
@@ -42,7 +43,13 @@ func NewMessageHandler() (*MessageHandler, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &MessageHandler{srv: userService}, nil
+
+	handler := NewChatHandler()
+
+	return &MessageHandler{srv: userService,
+		ChatHandler: handler,
+	}, nil
+
 }
 
 // HandleMessage 对请求进行处理，提取消息，并进行回复
@@ -231,6 +238,15 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	//通过对学号合法性进行校验
 	stdNumber, err := strconv.Atoi(tmp[0])
 	if err != nil || len(tmp) != 2 {
+		//进行聊天
+		if h.c != nil {
+			res, err := h.Chat(msg.Message)
+			if err == nil {
+				ReplyMsg(id, res)
+				return
+			}
+			fmt.Println(err)
+		}
 		ReplyMsg(id, "请不要发送无关消息")
 		return
 	}

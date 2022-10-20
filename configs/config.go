@@ -47,7 +47,6 @@ func ConfigInit() {
 	viper.AddConfigPath("../")
 	viper.AddConfigPath("./")
 	viper.AddConfigPath("../../")
-	viper.AddConfigPath("/")
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalln(err)
@@ -88,11 +87,10 @@ func ConfigInit() {
 
 	chatMap := viper.GetStringMap("chat")
 	enable = chatMap["enable"].(bool) //是否允许调用
-
 	if enable {
 		ChatConf = &chatConfig{
-			AppId:     chatMap["appId"].(string),
-			AppSecret: chatMap["appSecret"].(string),
+			AppId:     chatMap["appid"].(string),
+			AppSecret: chatMap["appsecret"].(string),
 			Enable:    true,
 		}
 	} else {
