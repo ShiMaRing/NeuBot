@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -100,6 +101,10 @@ func (h *MessageHandler) handleUnSubCourseMessage(qqNumber int64) {
 		ReplyMsg(qqNumber, "请先绑定账号")
 		return
 	}
+	if user.Perm&model.CoursePerm == 0 {
+		ReplyMsg(qqNumber, "请先订阅课程提醒")
+		return
+	}
 	//判断用户权限
 	if user.Perm&model.CoursePerm != 0 {
 		user.Perm = user.Perm & (^model.CoursePerm)
@@ -179,6 +184,7 @@ func (h *MessageHandler) handleSubHealthMessage(qqNumber int64) {
 	if res == true { //原来就在使用的用户
 		user.Perm = user.Perm | model.HealthPerm
 		ReplyMsg(qqNumber, "订阅自动上报成功")
+		ReplyMsg(qqNumber, BuildImageMessage("takedown.png"), false)
 		err := h.srv.UpdateUser(user)
 		if err != nil {
 			log.Println(err)
@@ -199,6 +205,7 @@ func (h *MessageHandler) handleSubHealthMessage(qqNumber int64) {
 	}
 	user.Perm = user.Perm | model.HealthPerm
 	ReplyMsg(qqNumber, "订阅自动上报成功")
+	ReplyMsg(qqNumber, BuildImageMessage("takedown.png"), false)
 	err = h.srv.UpdateUser(user)
 	if err != nil {
 		log.Println(err)
@@ -294,6 +301,7 @@ func (h *MessageHandler) handleLogoutMessage(id int64) {
 		ReplyMsg(id, "解绑失败，尚未绑定账号")
 	} else {
 		err := h.srv.UnbindUser(id)
+		h.health.Cancel(user)
 		if err != nil {
 			h.logoutFail(id, err)
 			return
@@ -328,6 +336,11 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	if err != nil || len(tmp) != 2 {
 		//进行聊天
 		if h.chat != nil {
+			//存在一定的概率
+			if rand.Float64() < 0.2 {
+				ReplyMsg(id, BuildImageMessage("doubt.jpg"), false)
+				return
+			}
 			res, err := h.chat.Chat(msg.Message)
 			if err == nil {
 				ReplyMsg(id, res)
@@ -376,6 +389,7 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 		return
 	} //更新用户信息
 	ReplyMsg(msg.UserID, "绑定账号成功 ")
+	ReplyMsg(msg.UserID, BuildImageMessage("takedown.png"), false)
 	return
 }
 
@@ -393,7 +407,7 @@ func buildTransmitMsg(msg *model.MsgReq) string {
 }
 
 func (h *MessageHandler) loginFail(id int64, err error) {
-	ReplyMsg(id, fmt.Sprintf("系统错误，暂时无法注册，错误信息\n %v", err))
+	ReplyMsg(id, fmt.Sprintf("系统错误，暂时无法绑定，错误信息\n %v", err))
 	logError(err)
 }
 
@@ -414,7 +428,6 @@ func (h *MessageHandler) subHealthFail(id int64, err error) {
 func (h *MessageHandler) unSubHealthFail(number int64, err error) {
 	ReplyMsg(number, fmt.Sprintf("取消健康上报服务失败，错误信息\n %v", err))
 	logError(err)
-
 }
 
 func logError(err error) {
