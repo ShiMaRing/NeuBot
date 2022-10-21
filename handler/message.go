@@ -34,7 +34,7 @@ const (
 
 type MessageHandler struct {
 	srv *service.UserService
-	*ChatHandler
+	*service.ChatService
 }
 
 // NewMessageHandler 构造函数
@@ -44,10 +44,10 @@ func NewMessageHandler() (*MessageHandler, error) {
 		return nil, err
 	}
 
-	handler := NewChatHandler()
+	handler := service.NewChatService()
 
 	return &MessageHandler{srv: userService,
-		ChatHandler: handler,
+		ChatService: handler,
 	}, nil
 
 }
@@ -239,7 +239,7 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	stdNumber, err := strconv.Atoi(tmp[0])
 	if err != nil || len(tmp) != 2 {
 		//进行聊天
-		if h.c != nil {
+		if h.C != nil {
 			res, err := h.Chat(msg.Message)
 			if err == nil {
 				ReplyMsg(id, res)
