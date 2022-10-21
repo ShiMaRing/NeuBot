@@ -90,3 +90,6 @@ func replyMsg(receiver int64, msg string, autoEscape ...bool) ([]byte, error) {
 
 	return d, nil
 }
+func BuildImageMessage(path string) string {
+	return fmt.Sprintf("[CQ:image,file=%s]", path)
+}

@@ -24,6 +24,7 @@ func NewNoticeHandler() (*NoticeHandler, error) {
 // Greet 给新好友打招呼
 func (h *NoticeHandler) Greet(req *model.NoticeReq) {
 	ReplyMsg(req.UserId, "欢迎使用NEU-BOT，发送序号指令使用，目前不支持南湖同学", false)
+	ReplyMsg(req.UserId, BuildImageMessage("onland.jpg"), false)
 	ReplyMsg(req.UserId, Menu, false)
 	//将用户进行保存
 	err := h.srv.SetUser(&model.User{QQ: req.UserId, State: model.LOGOUT})

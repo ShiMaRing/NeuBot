@@ -13,7 +13,12 @@ func testInit() {
 
 func TestReplyMsg(t *testing.T) {
 	testInit()
-	data, err := replyMsg(1150840779, "你好", false)
+	data, err := replyMsg(1150840779, "你好")
 	assert.NoError(t, err)
 	t.Log(string(data))
+}
+
+func TestReplyImage(t *testing.T) {
+	testInit()
+	ReplyMsg(1150840779, BuildImageMessage("onland.jpg"), false)
 }

@@ -33,8 +33,9 @@ const (
 )
 
 type MessageHandler struct {
-	srv *service.UserService
-	*service.ChatService
+	srv    *service.UserService
+	chat   *service.ChatService
+	health *service.HealthUpdateService
 }
 
 // NewMessageHandler 构造函数
@@ -45,9 +46,14 @@ func NewMessageHandler() (*MessageHandler, error) {
 	}
 
 	handler := service.NewChatService()
-
+	updateService, err := service.NewHealthUpdateService()
+	if err != nil {
+		return nil, err
+	}
+	//添加健康上报服务
 	return &MessageHandler{srv: userService,
-		ChatService: handler,
+		chat:   handler,
+		health: updateService,
 	}, nil
 
 }
@@ -68,9 +74,9 @@ func (h *MessageHandler) HandleMessage(msg *model.MsgReq) {
 	case UnSubCourseMessage:
 		h.handleUnSubCourseMessage(msg.UserID)
 	case SubHealthMessage:
-		h.handleDisabledMessage(msg.UserID)
+		h.handleSubHealthMessage(msg.UserID)
 	case UnSubHealthMessage:
-		h.handleDisabledMessage(msg.UserID)
+		h.handleUnSubHealthMessage(msg.UserID)
 	case LogoutMessage:
 		h.handleLogoutMessage(msg.UserID)
 	default:
@@ -134,6 +140,7 @@ func (h *MessageHandler) handleSubCourseMessage(qqNumber int64) {
 
 	//否则进行汇报逻辑
 	ReplyMsg(qqNumber, "正在获取本周课表,请稍后")
+	ReplyMsg(qqNumber, BuildImageMessage("dontAxious.png"), false)
 	course, err := spider.GetCourse(user)
 	if err != nil {
 		h.subCourseFail(qqNumber, err)
@@ -148,6 +155,86 @@ func (h *MessageHandler) handleSubCourseMessage(qqNumber int64) {
 		log.Println(err)
 	}
 	ReplyMsg(qqNumber, "获取课表成功,订阅成功")
+	return
+}
+
+//健康上报服务
+func (h *MessageHandler) handleSubHealthMessage(qqNumber int64) {
+	user, err := h.srv.GetUser(qqNumber)
+	if err != nil {
+		h.subHealthFail(qqNumber, err)
+		return
+	}
+	//获取到用户信息之后进行校验
+	if user.State == model.LOGOUT {
+		ReplyMsg(qqNumber, "请先绑定账号")
+		return
+	}
+	if user.Perm&model.HealthPerm != 0 {
+		ReplyMsg(qqNumber, "请勿重复订阅")
+		return
+	}
+	//开始订阅
+	res, err := h.health.GetUser(user.StdNumber)
+	if res == true { //原来就在使用的用户
+		user.Perm = user.Perm | model.HealthPerm
+		ReplyMsg(qqNumber, "订阅自动上报成功")
+		err := h.srv.UpdateUser(user)
+		if err != nil {
+			log.Println(err)
+		}
+		return
+	}
+	//查找失败
+	if err != nil {
+		h.subHealthFail(qqNumber, err)
+		return
+	}
+	//订阅
+	err = h.health.Insert(user)
+	if err != nil {
+		h.subHealthFail(qqNumber, err)
+		log.Println(err)
+		return
+	}
+	user.Perm = user.Perm | model.HealthPerm
+	ReplyMsg(qqNumber, "订阅自动上报成功")
+	err = h.srv.UpdateUser(user)
+	if err != nil {
+		log.Println(err)
+	}
+	return
+}
+
+//取消健康上报服务
+func (h *MessageHandler) handleUnSubHealthMessage(qqNumber int64) {
+	user, err := h.srv.GetUser(qqNumber)
+	if err != nil {
+		h.subHealthFail(qqNumber, err)
+		return
+	}
+	//获取到用户信息之后进行校验
+	if user.State == model.LOGOUT {
+		ReplyMsg(qqNumber, "请先绑定账号")
+		return
+	}
+	if user.Perm&model.HealthPerm == 0 {
+		ReplyMsg(qqNumber, "请先订阅自动上报")
+		return
+	}
+
+	err = h.health.Cancel(user)
+	if err != nil {
+		h.unSubHealthFail(qqNumber, err)
+		log.Println(err)
+		return
+	}
+	user.Perm = user.Perm & (^model.HealthPerm)
+	ReplyMsg(qqNumber, "取消自动上报成功")
+	err = h.srv.UpdateUser(user)
+	if err != nil {
+		log.Println(err)
+	}
 	return
 }
 
@@ -212,6 +299,7 @@ func (h *MessageHandler) handleLogoutMessage(id int64) {
 			return
 		}
 		ReplyMsg(id, "解绑成功")
+		ReplyMsg(id, BuildImageMessage("byebye.jpg"), false)
 	}
 }
 
@@ -239,8 +327,8 @@ func (h *MessageHandler) handleUnknownMessage(msg *model.MsgReq) {
 	stdNumber, err := strconv.Atoi(tmp[0])
 	if err != nil || len(tmp) != 2 {
 		//进行聊天
-		if h.C != nil {
-			res, err := h.Chat(msg.Message)
+		if h.chat != nil {
+			res, err := h.chat.Chat(msg.Message)
 			if err == nil {
 				ReplyMsg(id, res)
 				return
@@ -316,6 +404,17 @@ func (h *MessageHandler) logoutFail(id int64, err error) {
 func (h *MessageHandler) subCourseFail(id int64, err error) {
 	ReplyMsg(id, fmt.Sprintf("订阅课程提醒失败，错误信息\n %v", err))
 	logError(err)
+}
+
+func (h *MessageHandler) subHealthFail(id int64, err error) {
+	ReplyMsg(id, fmt.Sprintf("订阅健康上报服务失败，错误信息\n %v", err))
+	logError(err)
+}
+
+func (h *MessageHandler) unSubHealthFail(number int64, err error) {
+	ReplyMsg(number, fmt.Sprintf("取消健康上报服务失败，错误信息\n %v", err))
+	logError(err)
+
 }
 
 func logError(err error) {
