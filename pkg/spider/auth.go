@@ -53,6 +53,7 @@ func AuthWithAccount(stdNum string, password string) (success bool, token string
 		}
 	})
 	err = c.Visit(Url)
+	fmt.Println(err)
 	if err != nil {
 		return false, "", err
 	}
@@ -85,6 +86,7 @@ func AuthWithAccount(stdNum string, password string) (success bool, token string
 	})
 	err = c.Post(url, formData)
 	if err != nil {
+		fmt.Println(err)
 		return false, "", err
 	}
 	if token == "" {

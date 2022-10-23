@@ -9,8 +9,8 @@ import (
 
 func TestCourse(t *testing.T) {
 	user := &model.User{
-		StdNumber: "",
-		Password:  "",
+		StdNumber: "20206759",
+		Password:  "xgs583719992",
 	}
 	couses, err := GetCourse(user)
 	for i := range couses {

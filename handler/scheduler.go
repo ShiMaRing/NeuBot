@@ -117,8 +117,11 @@ func (h *schedulerHandler) refreshCourse() error {
 	if err != nil {
 		return err
 	}
+	group := sync.WaitGroup{}
 	for i := range users {
+		group.Add(1)
 		go func(i int) {
+			defer group.Done()
 			user := users[i]
 			courses, err := spider.GetCourse(user)
 			if err != nil { //继续执行下一个用户的课程获取任务
@@ -131,6 +134,7 @@ func (h *schedulerHandler) refreshCourse() error {
 			h.srv.UpdateUser(user) //更新用户信息，需要进行持久化操作,对于缓冲来说没什么必要
 		}(i)
 	}
+	group.Wait()
 	return nil
 }
 
@@ -180,7 +184,7 @@ func StartSchedule() error {
 	if err != nil {
 		return err
 	}
-	_, err = c.AddFunc("0 0 1 ? * 0 ", func() {
+	_, err = c.AddFunc("0 0 6 ? * 0 ", func() {
 		handler.srv.CleanAllCourse() //先清除
 		handler.refreshCourse()
 	})

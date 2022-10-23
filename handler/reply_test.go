@@ -22,3 +22,12 @@ func TestReplyImage(t *testing.T) {
 	testInit()
 	ReplyMsg(1150840779, BuildImageMessage("onland.jpg"), false)
 }
+
+func TestRefreshCourses(t *testing.T) {
+	configs.ConfigInit()
+	handler, err := newSchedulerHandler()
+	handler.srv.RebuildUsers()
+	assert.NoError(t, err)
+	err = handler.refreshCourse()
+	assert.NoError(t, err)
+}
