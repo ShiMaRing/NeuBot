@@ -27,7 +27,6 @@ func TestRefreshCourses(t *testing.T) {
 	configs.ConfigInit()
 	handler, err := newSchedulerHandler()
 	handler.srv.RebuildUsers()
-	assert.NoError(t, err)
 	err = handler.refreshCourse()
 	assert.NoError(t, err)
 }

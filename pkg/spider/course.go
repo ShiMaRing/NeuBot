@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"strconv"
 	"strings"
 )
@@ -151,7 +152,8 @@ func removeDup(dup string) string {
 }
 
 func fetch(req *http.Request) ([]byte, error) {
-	res, err := http.DefaultClient.Do(req)
+	client := &http.Client{Jar: &cookiejar.Jar{}}
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
